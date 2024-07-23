@@ -2,7 +2,6 @@
 
 namespace Joemunapo\Whatsapp;
 
-use Joemunapo\Whatsapp\Commands\WhatsappCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -17,9 +16,6 @@ class WhatsappServiceProvider extends PackageServiceProvider
          */
         $package
             ->name('whatsapp-php')
-            ->hasConfigFile()
-            ->hasViews()
-            ->hasMigration('create_whatsapp-php_table')
-            ->hasCommand(WhatsappCommand::class);
+            ->hasConfigFile('whatsapp');
     }
 }

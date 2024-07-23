@@ -1,19 +1,21 @@
-# This package provides a seamless integration of the WhatsApp Cloud API for Laravel applications. It offers a flexible. Ideal for multi-tenant applications or businesses managing multiple WhatsApp accounts, this package simplifies the complexities of WhatsApp integration while maintaining the flexibility to fit into your existing database structure.
+# WhatsApp Cloud API Integration for Laravel
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/joemunapo/whatsapp-php.svg?style=flat-square)](https://packagist.org/packages/joemunapo/whatsapp-php)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/joemunapo/whatsapp-php/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/joemunapo/whatsapp-php/actions?query=workflow%3Arun-tests+branch%3Amain)
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/joemunapo/whatsapp-php/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/joemunapo/whatsapp-php/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/joemunapo/whatsapp-php.svg?style=flat-square)](https://packagist.org/packages/joemunapo/whatsapp-php)
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+This package provides a seamless integration of the WhatsApp Cloud API for Laravel applications. It offers a flexible, database-driven approach to manage multiple WhatsApp business accounts within a single application.
 
-## Support us
+## Key Features
 
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/whatsapp-php.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/whatsapp-php)
+- Dynamic account resolution based on incoming webhooks
+- Configurable database model and field mappings
+- Support for sending messages, media, and interactive content
+- Session management for stateful conversations
+- Easy-to-use facade for quick implementation
 
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
+Ideal for multi-tenant applications or businesses managing multiple WhatsApp accounts, this package simplifies the complexities of WhatsApp integration while maintaining the flexibility to fit into your existing database structure.
 
 ## Installation
 
@@ -23,37 +25,62 @@ You can install the package via composer:
 composer require joemunapo/whatsapp-php
 ```
 
-You can publish and run the migrations with:
+## Configuration
 
-```bash
-php artisan vendor:publish --tag="whatsapp-php-migrations"
-php artisan migrate
-```
-
-You can publish the config file with:
+Publish the config file:
 
 ```bash
 php artisan vendor:publish --tag="whatsapp-php-config"
 ```
 
-This is the contents of the published config file:
+Update the published config file in `config/whatsapp.php`:
 
 ```php
 return [
+    'account_model' => \App\Models\Business::class,
+    'fields' => [
+        'number_id' => 'number_id',
+        'token' => 'whatsapp_token',
+        'catalog_id' => 'catalog_id',
+    ],
 ];
 ```
 
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag="whatsapp-php-views"
-```
+Ensure your database model (e.g., `Business`) has the necessary fields to store WhatsApp account details.
 
 ## Usage
 
+### Handling Webhooks
+
+In your webhook handler:
+
 ```php
-$whatsapp = new Joemunapo\Whatsapp();
-echo $whatsapp->echoPhrase('Hello, Joemunapo!');
+use Joemunapo\Whatsapp\Facades\WhatsApp;
+
+public function handleWebhook(Request $request)
+{
+    $numberId = $request->input('entry.0.changes.0.value.metadata.phone_number_id');
+    
+    try {
+        $message = WhatsApp::useNumberId($numberId)->handleMessage($request->all());
+        // Process the message...
+    } catch (\Exception $e) {
+        // Handle case where no account is found for the number ID
+        logger()->error("WhatsApp account not found: " . $e->getMessage());
+    }
+}
+```
+
+### Sending Messages
+
+```php
+use Joemunapo\Whatsapp\Facades\WhatsApp;
+
+try {
+    WhatsApp::useNumberId('1234567890')->sendMessage('1234567890', 'Hello, World!');
+} catch (\Exception $e) {
+    // Handle error (e.g., account not found)
+}
 ```
 
 ## Testing
