@@ -2,9 +2,9 @@
 
 namespace Joemunapo\Whatsapp;
 
+use Joemunapo\Whatsapp\Commands\WhatsappCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Joemunapo\Whatsapp\Commands\WhatsappCommand;
 
 class WhatsappServiceProvider extends PackageServiceProvider
 {

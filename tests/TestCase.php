@@ -3,8 +3,8 @@
 namespace Joemunapo\Whatsapp\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Orchestra\Testbench\TestCase as Orchestra;
 use Joemunapo\Whatsapp\WhatsappServiceProvider;
+use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
 {
