@@ -2,12 +2,12 @@
 
 namespace Joemunapo\Whatsapp;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
 
 class AccountResolver
 {
     protected $model;
+
     protected $fields;
 
     public function __construct()
@@ -20,7 +20,7 @@ class AccountResolver
     {
         $account = $this->model::where($this->fields['number_id'], $numberId)->first();
 
-        if (!$account) {
+        if (! $account) {
             return null;
         }
 

@@ -7,14 +7,23 @@ use Illuminate\Support\Arr;
 class Message
 {
     public string $from;
+
     public string $id;
+
     public $profile;
+
     public string $text;
+
     public string $type;
+
     public ?string $mediaId;
+
     public ?object $media;
+
     public bool $isButton;
+
     public bool $isOrder;
+
     protected Whatsapp $whatsapp;
 
     public function __construct($message, Whatsapp $whatsapp)
@@ -30,14 +39,14 @@ class Message
         $this->type = $message->type;
 
         $media = $message->{$this->type};
-        $mediaType = Arr::get($media, "type", "__");
-        $this->mediaId = Arr::get($media, "$mediaType.id", Arr::get($media, "id", ""));
+        $mediaType = Arr::get($media, 'type', '__');
+        $this->mediaId = Arr::get($media, "$mediaType.id", Arr::get($media, 'id', ''));
         $this->media = (object) $media;
 
         $this->text = collect([
             Arr::get($media, 'body', null),
             Arr::get($media, 'caption', null),
-            Arr::get($media, "{$mediaType}.title", null)
+            Arr::get($media, "{$mediaType}.title", null),
         ])->whereNotNull()->first('');
 
         $this->isButton = $mediaType === 'button_reply';
@@ -69,6 +78,7 @@ class Message
         if ($this->mediaId) {
             return $this->whatsapp->getMedia($this->mediaId);
         }
+
         return null;
     }
 

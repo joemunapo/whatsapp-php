@@ -2,14 +2,15 @@
 
 namespace Joemunapo\Whatsapp;
 
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Arr;
-
+use Illuminate\Support\Facades\Cache;
 
 class Session
 {
     protected $data;
+
     protected $storageKey;
+
     protected $ttl = 900; // 15 minutes
 
     public function __construct($key)
