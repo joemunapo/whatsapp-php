@@ -1,10 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Http;
 use Joemunapo\Whatsapp\AccountResolver;
-use Joemunapo\Whatsapp\Whatsapp;
 use Joemunapo\Whatsapp\Message;
+use Joemunapo\Whatsapp\Whatsapp;
 
 // tests/WhatsappTest.php
 
@@ -169,7 +169,7 @@ it('throws an exception when account is not found', function () {
 
     // Attempt to use a non-existent number ID
     Whatsapp::useNumberId($nonExistentNumberId)->sendMessage('1234567890', 'Test message');
-})->throws(Exception::class, "No WhatsApp account found for number ID: 9999999999");
+})->throws(Exception::class, 'No WhatsApp account found for number ID: 9999999999');
 
 // Clean up after each test
 afterEach(function () {

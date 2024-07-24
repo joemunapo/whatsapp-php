@@ -20,7 +20,7 @@ class AccountResolver
     {
         $account = $this->model::where($this->fields['number_id'], $numberId)->first();
 
-        if (!$account) {
+        if (! $account) {
             return null;
         }
 

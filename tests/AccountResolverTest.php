@@ -1,10 +1,10 @@
 <?php
 
-use Joemunapo\Whatsapp\AccountResolver;
 use Illuminate\Support\Facades\Config;
+use Joemunapo\Whatsapp\AccountResolver;
 
 beforeEach(function () {
-    $this->accountResolver = new AccountResolver();
+    $this->accountResolver = new AccountResolver;
 
     Config::shouldReceive('get')
         ->with('whatsapp.fields')
@@ -18,7 +18,6 @@ beforeEach(function () {
         ->with('whatsapp.account_model')
         ->andReturn(\stdClass::class);
 
-
     Config::shouldReceive('get')
         ->with('database.default')
         ->andReturn('dummy');
@@ -30,7 +29,7 @@ beforeEach(function () {
 
 it('resolves an account with valid number ID', function () {
     $numberId = '123456789';
-    
+
     $expectedAccount = [
         'token' => 'test_token',
         'number_id' => $numberId,

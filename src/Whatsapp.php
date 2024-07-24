@@ -27,7 +27,7 @@ class Whatsapp
 
     public static function getInstance(AccountResolver $accountResolver)
     {
-        if (!self::$instance) {
+        if (! self::$instance) {
             self::$instance = new self($accountResolver);
         }
 
@@ -37,13 +37,14 @@ class Whatsapp
     public static function useNumberId($numberId)
     {
         $instance = self::getInstance(app(AccountResolver::class));
+
         return $instance->setNumberId($numberId);
     }
 
     public function setNumberId($numberId)
     {
         $account = $this->accountResolver->resolve($numberId);
-        if (!$account) {
+        if (! $account) {
             throw new Exception("No WhatsApp account found for number ID: $numberId");
         }
         $this->setAccount($account['token'], $account['number_id'], $account['catalog_id'] ?? null);
@@ -132,7 +133,7 @@ class Whatsapp
         $response = Http::withToken($this->token)->get("{$this->apiUrl}/{$mediaId}");
 
         if ($response->failed()) {
-            throw new Exception('Failed to get media: ' . $response->body());
+            throw new Exception('Failed to get media: '.$response->body());
         }
 
         return $response->json();
@@ -145,7 +146,7 @@ class Whatsapp
         $response = Http::withToken($this->token)->post($url, $data);
 
         if ($response->failed()) {
-            throw new Exception('WhatsApp API request failed: ' . $response->body());
+            throw new Exception('WhatsApp API request failed: '.$response->body());
         }
 
         return $response->json();
@@ -153,7 +154,7 @@ class Whatsapp
 
     protected function validateSetup()
     {
-        if (!$this->token || !$this->numberId) {
+        if (! $this->token || ! $this->numberId) {
             throw new Exception('WhatsApp account not properly configured. Use useNumberId() before making requests.');
         }
     }
@@ -162,17 +163,17 @@ class Whatsapp
     {
         $instance = self::getInstance(app(AccountResolver::class));
         $entry = Arr::get($payload, 'entry.0', null);
-        if (!$entry) {
+        if (! $entry) {
             return null;
         }
 
         $change = Arr::get($entry, 'changes.0', null);
-        if (!$change || Arr::get($change, 'field') !== 'messages') {
+        if (! $change || Arr::get($change, 'field') !== 'messages') {
             return null;
         }
 
         $messageData = (object) Arr::get($change, 'value.messages.0', null);
-        if (!$messageData) {
+        if (! $messageData) {
             return null;
         }
 
