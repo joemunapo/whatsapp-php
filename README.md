@@ -33,7 +33,7 @@ composer require joemunapo/whatsapp-php
 Publish the config file:
 
 ```bash
-php artisan vendor:publish --tag="whatsapp-config"
+php artisan vendor:publish --tag="whatsapp-php-config" 
 ```
 
 Update the published config file in `config/whatsapp.php`:
