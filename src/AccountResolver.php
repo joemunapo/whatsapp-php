@@ -10,9 +10,9 @@ class AccountResolver
 
     protected $fields;
 
-    public function __construct()
+    public function __construct($model = null)
     {
-        $this->model = Config::get('whatsapp.account_model');
+        $this->model = $model ?? Config::get('whatsapp.account_model');
         $this->fields = Config::get('whatsapp.fields');
     }
 
@@ -20,7 +20,7 @@ class AccountResolver
     {
         $account = $this->model::where($this->fields['number_id'], $numberId)->first();
 
-        if (! $account) {
+        if (!$account) {
             return null;
         }
 

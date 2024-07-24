@@ -9,11 +9,14 @@ This package provides a seamless integration of the WhatsApp Cloud API for Larav
 
 ## Key Features
 
-- Dynamic account resolution based on incoming webhooks
-- Configurable database model and field mappings
-- Support for sending messages, media, and interactive content
-- Session management for stateful conversations
-- Easy-to-use facade for quick implementation
+- Easy integration with Laravel applications
+- Support for multiple WhatsApp business accounts
+- Database-driven account management
+- Webhook handling for incoming messages
+- Simple interface for sending text and media messages
+- Template message support
+- Marking messages as read
+- Retrieving media content
 
 Ideal for multi-tenant applications or businesses managing multiple WhatsApp accounts, this package simplifies the complexities of WhatsApp integration while maintaining the flexibility to fit into your existing database structure.
 
@@ -30,7 +33,7 @@ composer require joemunapo/whatsapp-php
 Publish the config file:
 
 ```bash
-php artisan vendor:publish --tag="whatsapp-php-config"
+php artisan vendor:publish --tag="whatsapp-config"
 ```
 
 Update the published config file in `config/whatsapp.php`:
@@ -55,33 +58,62 @@ Ensure your database model (e.g., `Business`) has the necessary fields to store 
 In your webhook handler:
 
 ```php
-use Joemunapo\Whatsapp\Facades\WhatsApp;
+use Joemunapo\Whatsapp\Whatsapp;
 
 public function handleWebhook(Request $request)
 {
-    $numberId = $request->input('entry.0.changes.0.value.metadata.phone_number_id');
-    
-    try {
-        $message = WhatsApp::useNumberId($numberId)->handleMessage($request->all());
-        // Process the message...
-    } catch (\Exception $e) {
-        // Handle case where no account is found for the number ID
-        logger()->error("WhatsApp account not found: " . $e->getMessage());
+    $message = Whatsapp::handleWebhook($request->all());
+
+    if ($message) {
+        // Process the incoming message
+        $message->markAsRead();
+        $message->reply('Thank you for your message!');
     }
+
+    return response()->json(['success' => true]);
 }
 ```
 
 ### Sending Messages
 
-```php
-use Joemunapo\Whatsapp\Facades\WhatsApp;
+To send a message, first select the WhatsApp account using the `useNumberId()` method, then call the appropriate send method:
 
-try {
-    WhatsApp::useNumberId('1234567890')->sendMessage('1234567890', 'Hello, World!');
-} catch (\Exception $e) {
-    // Handle error (e.g., account not found)
-}
+```php
+use Joemunapo\Whatsapp\Whatsapp;
+
+// Send a text message
+Whatsapp::useNumberId('your_number_id')
+    ->sendMessage('recipient_phone_number', 'Hello, World!');
+
+// Send a media message
+Whatsapp::useNumberId('your_number_id')
+    ->sendMedia('recipient_phone_number', 'image', 'https://example.com/image.jpg', 'Check out this image!');
+
+// Send a template message
+Whatsapp::useNumberId('your_number_id')
+    ->sendTemplate('recipient_phone_number', 'template_name', 'en_US', [
+        // Template components
+    ]);
 ```
+
+### Marking Message as Read
+
+You can mark a message as read using the `markMessageAsRead()` method:
+
+```php
+Whatsapp::useNumberId('your_number_id')
+    ->markMessageAsRead('recipient_phone_number', 'message_id');
+```
+
+### Retrieving Media Content
+
+To retrieve media content, use the `getMedia()` method:
+
+```php
+$mediaContent = Whatsapp::useNumberId('your_number_id')
+    ->getMedia('media_id');
+```
+
 
 ## Testing
 

@@ -39,17 +39,17 @@ class Message
         $this->type = $message->type;
 
         $media = $message->{$this->type};
-        $mediaType = Arr::get($media, 'type', '__');
-        $this->mediaId = Arr::get($media, "$mediaType.id", Arr::get($media, 'id', ''));
+        $media_type = Arr::get($media, 'type', '__');
+        $this->mediaId = Arr::get($media, "$media_type.id", Arr::get($media, 'id', ''));
         $this->media = (object) $media;
 
         $this->text = collect([
             Arr::get($media, 'body', null),
             Arr::get($media, 'caption', null),
-            Arr::get($media, "{$mediaType}.title", null),
-        ])->whereNotNull()->first('');
+            Arr::get($media, "{$media_type}.title", null),
+        ])->whereNotNull()->first(default: '');
 
-        $this->isButton = $mediaType === 'button_reply';
+        $this->isButton = $media_type === 'button_reply';
         $this->isOrder = $this->type === 'order';
     }
 
