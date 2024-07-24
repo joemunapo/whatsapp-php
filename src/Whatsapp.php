@@ -27,7 +27,7 @@ class Whatsapp
 
     public static function getInstance(AccountResolver $accountResolver)
     {
-        if (! self::$instance) {
+        if (!self::$instance) {
             self::$instance = new self($accountResolver);
         }
 
@@ -44,7 +44,7 @@ class Whatsapp
     public function setNumberId($numberId)
     {
         $account = $this->accountResolver->resolve($numberId);
-        if (! $account) {
+        if (!$account) {
             throw new Exception("No WhatsApp account found for number ID: $numberId");
         }
         $this->setAccount($account['token'], $account['number_id'], $account['catalog_id'] ?? null);
@@ -154,7 +154,7 @@ class Whatsapp
 
     protected function validateSetup()
     {
-        if (! $this->token || ! $this->numberId) {
+        if (!$this->token || !$this->numberId) {
             throw new Exception('WhatsApp account not properly configured. Use useNumberId() before making requests.');
         }
     }
@@ -163,17 +163,21 @@ class Whatsapp
     {
         $instance = self::getInstance(app(AccountResolver::class));
         $entry = Arr::get($payload, 'entry.0', null);
-        if (! $entry) {
+        if (!$entry) {
             return null;
         }
 
         $change = Arr::get($entry, 'changes.0', null);
-        if (! $change || Arr::get($change, 'field') !== 'messages') {
+        if (!$change || Arr::get($change, 'field') !== 'messages') {
             return null;
         }
 
         $messageData = (object) Arr::get($change, 'value.messages.0', null);
-        if (! $messageData) {
+        if (!$messageData) {
+            return null;
+        }
+
+        if (in_array($messageData->type, ['unsupported', 'reaction'])) {
             return null;
         }
 

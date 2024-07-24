@@ -4,7 +4,7 @@ namespace Joemunapo\Whatsapp;
 
 use Illuminate\Support\Arr;
 
-class Message
+class Message extends Session
 {
     public string $from;
 
@@ -28,6 +28,7 @@ class Message
 
     public function __construct($message, Whatsapp $whatsapp)
     {
+        parent::__construct($message->from);
         $this->whatsapp = $whatsapp;
         $this->initializeMessage($message);
     }
