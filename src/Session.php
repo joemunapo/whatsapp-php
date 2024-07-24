@@ -8,14 +8,15 @@ class Session
 {
     // Initializing private properties
     private $data;
+
     private $storage_key;
+
     private $initialized_key;
 
     /**
      * Constructor to initialize the class properties
-     * 
-     * @param $key string
-     * 
+     *
+     * @param  $key  string
      * @return void
      */
     public function __construct($key)
@@ -27,7 +28,7 @@ class Session
         $this->initialized_key = "{$this->storage_key}_initialized";
 
         // Adding the initialized key with a TTL of one minute
-        if (!Cache::add($this->initialized_key, true, 8)) {
+        if (! Cache::add($this->initialized_key, true, 8)) {
             throw new \InvalidArgumentException("Session with key '$key' already exists.");
         }
 
@@ -37,7 +38,7 @@ class Session
 
     /**
      * Destructor to save session data in cache on object destruction
-     * 
+     *
      * @return void
      */
     public function __destruct()
@@ -50,10 +51,9 @@ class Session
 
     /**
      * Method to add or update a key-value pair to session data
-     * 
-     * @param $key string
-     * @param $value mixed
-     * 
+     *
+     * @param  $key  string
+     * @param  $value  mixed
      * @return void
      */
     public function remember(string|object|array $key, $value = null)
@@ -72,13 +72,10 @@ class Session
         }
     }
 
-    /**
-     * 
-     */
-    public function setNext(string $method, string $controller = null)
+    public function setNext(string $method, ?string $controller = null)
     {
         $this->setMethod($method);
-        if (!is_null($controller)) {
+        if (! is_null($controller)) {
             $this->setController($controller);
         }
     }
@@ -102,8 +99,6 @@ class Session
 
     // Add another method
 
-
-
     //TODO Check if method exists
     private function setMethod(string $method)
     {
@@ -113,26 +108,25 @@ class Session
     /**
      * Method to remove a key from session data
      * If the parameter is 'all', then removes all data from session
-     * 
-     * @param $key string
-     * 
+     *
+     * @param  $key  string
      * @return void
      */
     public function forget(string $key = 'all', bool $silentFail = false)
     {
         if ($key === 'all') {
             $this->data = (object) [];
-        } else if (isset($this->data?->{$key})) {
+        } elseif (isset($this->data?->{$key})) {
             unset($this->data->{$key});
         }
+
         return false;
     }
 
     /**
      * Method to retrieve a value for the given key from session data
-     * 
-     * @param $key string
-     * 
+     *
+     * @param  $key  string
      * @return mixed|null
      */
     public function get(string $key, $default = null)
