@@ -114,7 +114,6 @@ $mediaContent = Whatsapp::useNumberId('your_number_id')
     ->getMedia('media_id');
 ```
 
-
 ## Testing
 
 ```bash

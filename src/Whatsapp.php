@@ -133,7 +133,7 @@ class Whatsapp
         $response = Http::withToken($this->token)->get("{$this->apiUrl}/{$mediaId}");
 
         if ($response->failed()) {
-            throw new Exception('Failed to get media: '.$response->body());
+            throw new Exception("Failed to get media: {$response->body()}");
         }
 
         return $response->json();
@@ -146,7 +146,7 @@ class Whatsapp
         $response = Http::withToken($this->token)->post($url, $data);
 
         if ($response->failed()) {
-            throw new Exception('WhatsApp API request failed: '.$response->body());
+            throw new Exception("WhatsApp API request failed: {$response->body()}");
         }
 
         return $response->json();
