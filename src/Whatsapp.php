@@ -31,6 +31,7 @@ class Whatsapp
         $this->accountResolver = $accountResolver;
     }
 
+    // TODO: Verify why we need useNumberId() method and refactor it
     public static function getInstance(AccountResolver $accountResolver)
     {
         return new self($accountResolver);
@@ -346,9 +347,6 @@ class Whatsapp
         $this->validateSetup();
 
         $data = (object) [
-            'messaging_product' => 'whatsapp',
-            'recipient_type' => 'individual',
-            'to' => $to,
             'type' => $mediaType,
             $mediaType => [
                 'link' => $mediaUrl,
@@ -359,32 +357,11 @@ class Whatsapp
         return $this->sendToWhatsAppAPI($to, $data);
     }
 
-    // public function sendMedia($to, $mediaType, $mediaUrl, $caption = null)
-    // {
-    //     $this->validateSetup();
-
-    //     $data = [
-    //         'messaging_product' => 'whatsapp',
-    //         'recipient_type' => 'individual',
-    //         'to' => $to,
-    //         'type' => $mediaType,
-    //         $mediaType => [
-    //             'link' => $mediaUrl,
-    //             'caption' => $caption,
-    //         ],
-    //     ];
-
-    //     return $this->sendRequest('messages', $data);
-    // }
-
     public function sendTemplate(string $to, string $templateName, string $languageCode, array $components = []): ?string
     {
         $this->validateSetup();
 
         $data = (object) [
-            'messaging_product' => 'whatsapp',
-            'recipient_type' => 'individual',
-            'to' => $to,
             'type' => 'template',
             'template' => (object) [
                 'name' => $templateName,
@@ -396,50 +373,17 @@ class Whatsapp
         return $this->sendToWhatsAppAPI($to, $data);
     }
 
-    // public function sendTemplate($to, $templateName, $languageCode, $components = [])
-    // {
-    //     $this->validateSetup();
-
-    //     $data = [
-    //         'messaging_product' => 'whatsapp',
-    //         'recipient_type' => 'individual',
-    //         'to' => $to,
-    //         'type' => 'template',
-    //         'template' => [
-    //             'name' => $templateName,
-    //             'language' => ['code' => $languageCode],
-    //             'components' => $components,
-    //         ],
-    //     ];
-
-    //     return $this->sendRequest('messages', $data);
-    // }
-
     public function markMessageAsRead(string $phoneNumber, string $messageId): ?string
     {
         $this->validateSetup();
 
         $data = (object) [
-            'messaging_product' => 'whatsapp',
             'status' => 'read',
             'message_id' => $messageId,
         ];
 
         return $this->sendToWhatsAppAPI($phoneNumber, $data);
     }
-
-    // public function markMessageAsRead($phoneNumber, $messageId)
-    // {
-    //     $this->validateSetup();
-
-    //     $data = [
-    //         'messaging_product' => 'whatsapp',
-    //         'status' => 'read',
-    //         'message_id' => $messageId,
-    //     ];
-
-    //     return $this->sendRequest('messages', $data);
-    // }
 
     public function getMedia($mediaId)
     {
@@ -451,21 +395,6 @@ class Whatsapp
 
         if ($response->failed()) {
             throw new Exception("Failed to get media: {$response->body()}");
-        }
-
-        return $response->json();
-    }
-
-    protected function sendRequest($endpoint, $data)
-    {
-        $apiUrl = self::WHATSAPP_API_URL;
-
-        $url = "{$apiUrl}/{$this->numberId}/{$endpoint}";
-
-        $response = Http::withToken($this->token)->post($url, $data);
-
-        if ($response->failed()) {
-            throw new Exception("WhatsApp API request failed: {$response->body()}");
         }
 
         return $response->json();
