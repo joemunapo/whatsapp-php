@@ -61,8 +61,11 @@ class Message extends Session
 
     public function isHi()
     {
-        if (!is_string($this->text)) return false;
+        if (! is_string($this->text)) {
+            return false;
+        }
         $his = ['hi', '#', 'hie', 'hey', 'hello', 'menu', 'hy', 'yo', 'go home', 'home', '🏠 home', 'mom', 'makadini', 'murisei'];
+
         return in_array(strtolower($this->text), $his);
     }
 
