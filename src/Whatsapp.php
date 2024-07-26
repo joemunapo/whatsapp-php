@@ -83,7 +83,7 @@ class Whatsapp
             return null;
         }
 
-        if (! in_array(optional($messageData)->type, ['text', 'interactive', 'media', 'document'])) {
+        if (! in_array(optional($messageData)->type, ['text', 'interactive', 'media', 'document', 'image', 'video'])) {
             logger('Unsupported message type: '.optional($messageData)->type);
 
             return null;
