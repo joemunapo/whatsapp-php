@@ -1,4 +1,4 @@
-# WhatsApp PHP Package
+# Joe Munapo's WhatsApp PHP Package
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/joemunapo/whatsapp-php.svg?style=flat-square)](https://packagist.org/packages/joemunapo/whatsapp-php)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/joemunapo/whatsapp-php/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/joemunapo/whatsapp-php/actions?query=workflow%3Arun-tests+branch%3Amain)
