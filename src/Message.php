@@ -33,6 +33,11 @@ class Message extends Session
         $this->initializeMessage($message);
     }
 
+    public function getAccount()
+    {
+        return $this->whatsapp->getAccount();
+    }
+
     protected function initializeMessage($message)
     {
         $this->from = $message->from;
