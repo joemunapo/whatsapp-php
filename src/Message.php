@@ -10,7 +10,8 @@ class Message extends Session
 
     public string $id;
 
-    public $profile;
+    // User/Client sending message - Can be initializes in webhook
+    public $user;
 
     public string $text;
 
