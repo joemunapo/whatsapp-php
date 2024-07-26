@@ -12,9 +12,9 @@ use Illuminate\Support\Facades\Facade;
  * @method static string|null sendTemplate(string $to, string $templateName, string $languageCode, array $components = [])
  * @method static string|null markMessageAsRead(string $phoneNumber, string $messageId)
  * @method static array getMedia(string $mediaId)
- * 
+ *
  * @mixins \Joemunapo\Whatsapp\Whatsapp
- * 
+ *
  * @see \Joemunapo\Whatsapp\Whatsapp
  */
 class Whatsapp extends Facade
