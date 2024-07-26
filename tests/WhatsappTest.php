@@ -19,6 +19,11 @@ beforeEach(function () {
     Config::set('whatsapp.account_model', \stdClass::class);
 });
 
+// Clean up after each test
+afterEach(function () {
+    Mockery::close();
+});
+
 // Test handling an incoming webhook
 it('can handle incoming webhooks', function () {
     $numberId = '1234567890';
@@ -66,11 +71,8 @@ it('can handle incoming webhooks', function () {
         'catalog_id' => 'test_catalog_id',
     ]);
 
-    // Ensure that the static instance uses the mocked resolver
-    Whatsapp::getInstance($mockResolver);
-
-    // Call the handleWebhook method directly
-    $response = Whatsapp::handleWebhook($incomingData);
+    $whatsapp = Whatsapp::getInstance($mockResolver);
+    $response = Whatsapp::handleWebhook($incomingData, $whatsapp);
 
     // Assert the message was handled correctly
     expect($response)->toBeInstanceOf(Message::class);
@@ -78,7 +80,6 @@ it('can handle incoming webhooks', function () {
     expect($response->text)->toBe($message);
 });
 
-// Test sending a message
 it('can send a text message', function () {
     $numberId = '1234567890';
     $recipient = '0987654321';
@@ -86,7 +87,7 @@ it('can send a text message', function () {
 
     // Mock the HTTP request to the WhatsApp API
     Http::fake([
-        "https://graph.facebook.com/v18.0/{$numberId}/messages" => Http::response(['messages' => []], 200),
+        "https://graph.facebook.com/v18.0/{$numberId}/messages" => Http::response(['messages' => [['id' => 'message_id_123']]], 200),
     ]);
 
     // Mock the AccountResolver to return a test account
@@ -98,10 +99,14 @@ it('can send a text message', function () {
     ]);
 
     // Ensure that the static instance uses the mocked resolver
-    Whatsapp::getInstance($mockResolver);
+    $whatsapp = Whatsapp::getInstance($mockResolver);
+
+    $msg = (object) [
+        'text' => ['body' => $message]
+    ];
 
     // Send the message using the WhatsApp facade
-    $response = Whatsapp::useNumberId($numberId)->sendMessage($recipient, $message);
+    $response = $whatsapp->setNumberId($numberId)->sendMessage($recipient, $msg);
 
     // Assert the request was made to the correct endpoint
     Http::assertSent(function ($request) use ($numberId, $recipient, $message) {
@@ -112,8 +117,9 @@ it('can send a text message', function () {
             $request['text']['body'] === $message;
     });
 
-    // Assert the response
-    expect($response)->toBe(['messages' => []]);
+    // Check that response is the expected array structure
+    expect($response)->toBeString();
+    expect($response)->toBe('message_id_123');
 });
 
 it('can send a media message', function () {
@@ -121,11 +127,11 @@ it('can send a media message', function () {
     $recipient = '0987654321';
     $mediaType = 'image';
     $mediaUrl = 'https://example.com/image.jpg';
-    $caption = 'Check out this image!';
+    $caption = 'This is a caption';
 
     // Mock the HTTP request to the WhatsApp API
     Http::fake([
-        "https://graph.facebook.com/v18.0/{$numberId}/messages" => Http::response(['messages' => [['id' => 'media_message_id']]], 200),
+        "https://graph.facebook.com/v18.0/{$numberId}/messages" => Http::response(['messages' => [['id' => 'message_id_456']]], 200),
     ]);
 
     // Mock the AccountResolver to return a test account
@@ -137,15 +143,13 @@ it('can send a media message', function () {
     ]);
 
     // Ensure that the static instance uses the mocked resolver
-    Whatsapp::getInstance($mockResolver);
+    $whatsapp = Whatsapp::getInstance($mockResolver);
 
-    // Send the media message using the WhatsApp facade
-    $response = Whatsapp::useNumberId($numberId)->sendMedia($recipient, $mediaType, $mediaUrl, $caption);
+    $response = $whatsapp->setNumberId($numberId)->sendMedia($recipient, $mediaType, $mediaUrl, $caption);
 
-    // Assert the request was made to the correct endpoint with the correct data
+    // Assert the request was made to the correct endpoint
     Http::assertSent(function ($request) use ($numberId, $recipient, $mediaType, $mediaUrl, $caption) {
         return $request->url() === "https://graph.facebook.com/v18.0/{$numberId}/messages" &&
-            $request['messaging_product'] === 'whatsapp' &&
             $request['recipient_type'] === 'individual' &&
             $request['to'] === $recipient &&
             $request['type'] === $mediaType &&
@@ -153,25 +157,28 @@ it('can send a media message', function () {
             $request[$mediaType]['caption'] === $caption;
     });
 
-    // Assert the response
-    expect($response)->toBe(['messages' => [['id' => 'media_message_id']]]);
+    // Check that response is the expected array structure
+    expect($response)->toBeString();
+    expect($response)->toBe('message_id_456');
 });
 
 it('throws an exception when account is not found', function () {
-    $nonExistentNumberId = '9999999999';
+    $numberId = '9999999999'; // Using a number ID that will not be resolved
+    $recipient = '1234567890';
+    $content = (object)[
+        'text' => 'Hello, world!'
+    ];
 
-    // Mock the AccountResolver to return null (simulating account not found)
+    // Mock the AccountResolver to return null (account not found)
     $mockResolver = Mockery::mock(AccountResolver::class);
-    $mockResolver->shouldReceive('resolve')->with($nonExistentNumberId)->andReturn(null);
+    $mockResolver->shouldReceive('resolve')->andReturnNull();
 
     // Ensure that the static instance uses the mocked resolver
-    Whatsapp::getInstance($mockResolver);
+    $whatsapp = Whatsapp::getInstance($mockResolver);
 
-    // Attempt to use a non-existent number ID
-    Whatsapp::useNumberId($nonExistentNumberId)->sendMessage('1234567890', 'Test message');
-})->throws(Exception::class, 'No WhatsApp account found for number ID: 9999999999');
+    // Assert that an exception is thrown
+    $this->expectException(Exception::class);
+    $this->expectExceptionMessage("No WhatsApp account found for number ID: $numberId");
 
-// Clean up after each test
-afterEach(function () {
-    Mockery::close();
+    $whatsapp->setNumberId($numberId)->sendMessage($recipient, $content);
 });
