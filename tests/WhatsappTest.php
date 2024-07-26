@@ -102,7 +102,7 @@ it('can send a text message', function () {
     $whatsapp = Whatsapp::getInstance($mockResolver);
 
     $msg = (object) [
-        'text' => ['body' => $message]
+        'text' => ['body' => $message],
     ];
 
     // Send the message using the WhatsApp facade
@@ -165,8 +165,8 @@ it('can send a media message', function () {
 it('throws an exception when account is not found', function () {
     $numberId = '9999999999'; // Using a number ID that will not be resolved
     $recipient = '1234567890';
-    $content = (object)[
-        'text' => 'Hello, world!'
+    $content = (object) [
+        'text' => 'Hello, world!',
     ];
 
     // Mock the AccountResolver to return null (account not found)

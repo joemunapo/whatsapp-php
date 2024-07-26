@@ -46,7 +46,7 @@ class Whatsapp
     public function setNumberId($numberId)
     {
         $account = $this->accountResolver->resolve($numberId);
-        if (!$account) {
+        if (! $account) {
             throw new Exception("No WhatsApp account found for number ID: $numberId");
         }
         $this->setAccount($account['token'], $account['number_id'], $account['catalog_id'] ?? null);
@@ -68,17 +68,17 @@ class Whatsapp
         $instance = $instance ?? self::getInstance(app(AccountResolver::class));
 
         $entry = Arr::get($payload, 'entry.0', null);
-        if (!$entry) {
+        if (! $entry) {
             return null;
         }
 
         $change = Arr::get($entry, 'changes.0', null);
-        if (!$change || Arr::get($change, 'field') !== 'messages') {
+        if (! $change || Arr::get($change, 'field') !== 'messages') {
             return null;
         }
 
         $messageData = (object) Arr::get($change, 'value.messages.0', null);
-        if (!$messageData) {
+        if (! $messageData) {
             return null;
         }
 
@@ -95,9 +95,10 @@ class Whatsapp
     /**
      * Send a message to WhatsApp API
      *
-     * @param string $to Recipient's phone number
-     * @param object $content Message content
+     * @param  string  $to  Recipient's phone number
+     * @param  object  $content  Message content
      * @return string|null Message ID if successful, null otherwise
+     *
      * @throws \InvalidArgumentException
      * @throws WhatsappApiException
      */
@@ -105,7 +106,7 @@ class Whatsapp
     {
         $this->validateSetup();
 
-        if (!is_object($content)) {
+        if (! is_object($content)) {
             throw new \InvalidArgumentException('Content must be an object.');
         }
 
@@ -114,7 +115,7 @@ class Whatsapp
         $body = match ($content->type) {
             'interactive' => $this->createInteractiveMessage($content),
             'text' => $content,
-            default => throw new \InvalidArgumentException('Unsupported message type: ' . $content->type),
+            default => throw new \InvalidArgumentException('Unsupported message type: '.$content->type),
         };
 
         if (isset($content->context)) {
@@ -127,25 +128,20 @@ class Whatsapp
     /**
      * Create an interactive message based on content type
      *
-     * @param object $content
-     * @return object
      * @throws \InvalidArgumentException
      */
     protected function createInteractiveMessage(object $content): object
     {
         return match (true) {
-            !empty($content->buttons) => $this->createButtonMessage($content),
-            !empty($content->results) || !empty($content->related) => $this->createProductListMessage($content),
-            !empty($content->list) || !empty($content->description_list) => $this->createListMessage($content),
+            ! empty($content->buttons) => $this->createButtonMessage($content),
+            ! empty($content->results) || ! empty($content->related) => $this->createProductListMessage($content),
+            ! empty($content->list) || ! empty($content->description_list) => $this->createListMessage($content),
             default => throw new \InvalidArgumentException('Invalid interactive message type.'),
         };
     }
 
     /**
      * Create a button message
-     *
-     * @param object $content
-     * @return object
      */
     protected function createButtonMessage(object $content): object
     {
@@ -154,12 +150,12 @@ class Whatsapp
             'interactive' => (object) [
                 'type' => 'button',
                 'body' => [
-                    'text' => $content->text
+                    'text' => $content->text,
                 ],
                 'action' => [
-                    'buttons' => $this->createButtons($content->buttons)
-                ]
-            ]
+                    'buttons' => $this->createButtons($content->buttons),
+                ],
+            ],
         ];
 
         $this->addHeaderAndFooter($body, $content);
@@ -169,9 +165,6 @@ class Whatsapp
 
     /**
      * Create buttons for interactive messages
-     *
-     * @param array $buttons
-     * @return array
      */
     protected function createButtons(array $buttons): array
     {
@@ -179,16 +172,13 @@ class Whatsapp
             'type' => 'reply',
             'reply' => [
                 'id' => $btn,
-                'title' => $btn
-            ]
+                'title' => $btn,
+            ],
         ]);
     }
 
     /**
      * Create a product list message
-     *
-     * @param object $content
-     * @return object
      */
     protected function createProductListMessage(object $content): object
     {
@@ -197,20 +187,20 @@ class Whatsapp
             'interactive' => (object) [
                 'type' => 'product_list',
                 'body' => [
-                    'text' => $content->text
+                    'text' => $content->text,
                 ],
                 'action' => (object) [
                     'catalog_id' => $this->catalogId,
-                    'sections' => []
-                ]
-            ]
+                    'sections' => [],
+                ],
+            ],
         ];
 
-        if (!empty($content->results)) {
+        if (! empty($content->results)) {
             $this->addProductSection($body, $content->results, $content->results_title);
         }
 
-        if (!empty($content->related)) {
+        if (! empty($content->related)) {
             $this->addProductSection($body, $content->related, $content->related_title);
         }
 
@@ -221,9 +211,6 @@ class Whatsapp
 
     /**
      * Create a list message
-     *
-     * @param object $content
-     * @return object
      */
     protected function createListMessage(object $content): object
     {
@@ -232,22 +219,22 @@ class Whatsapp
             'interactive' => (object) [
                 'type' => 'list',
                 'body' => [
-                    'text' => $content->text
+                    'text' => $content->text,
                 ],
                 'action' => (object) [
                     'button' => $content->list_button_title,
-                    'sections' => []
-                ]
-            ]
+                    'sections' => [],
+                ],
+            ],
         ];
 
-        $rows = !empty($content->list)
+        $rows = ! empty($content->list)
             ? $this->createSimpleListRows($content->list)
             : $this->createDescriptionListRows($content->description_list);
 
         $body->interactive->action->sections[] = [
             'title' => $content->list_title ?? null,
-            'rows' => $rows
+            'rows' => $rows,
         ];
 
         $this->addHeaderAndFooter($body, $content);
@@ -257,10 +244,6 @@ class Whatsapp
 
     /**
      * Add a product section to the message body
-     *
-     * @param object $body
-     * @param array $products
-     * @param string $title
      */
     protected function addProductSection(object &$body, array $products, string $title): void
     {
@@ -268,15 +251,12 @@ class Whatsapp
 
         $body->interactive->action->sections[] = [
             'title' => $title,
-            'product_items' => $items
+            'product_items' => $items,
         ];
     }
 
     /**
      * Create rows for a simple list
-     *
-     * @param array $list
-     * @return array
      */
     protected function createSimpleListRows(array $list): array
     {
@@ -288,9 +268,6 @@ class Whatsapp
 
     /**
      * Create rows for a description list
-     *
-     * @param array $list
-     * @return array
      */
     protected function createDescriptionListRows(array $list): array
     {
@@ -303,22 +280,19 @@ class Whatsapp
 
     /**
      * Add header and footer to the message body
-     *
-     * @param object $body
-     * @param object $content
      */
     protected function addHeaderAndFooter(object &$body, object $content): void
     {
-        if (!empty($content->header)) {
+        if (! empty($content->header)) {
             $body->interactive->header = [
                 'type' => 'text',
-                'text' => $content->header
+                'text' => $content->header,
             ];
         }
 
-        if (!empty($content->caption)) {
+        if (! empty($content->caption)) {
             $body->interactive->footer = [
-                'text' => $content->caption
+                'text' => $content->caption,
             ];
         }
     }
@@ -326,9 +300,6 @@ class Whatsapp
     /**
      * Send the message to WhatsApp API
      *
-     * @param string $to
-     * @param object $content
-     * @return string|null
      * @throws WhatsappApiException
      */
     protected function sendToWhatsAppAPI(string $to, object $content): ?string
@@ -354,10 +325,6 @@ class Whatsapp
 
     /**
      * Build the API endpoint URL
-     *
-     * @param string $for
-     * @param bool $withNumberId
-     * @return string
      */
     protected function buildApiEndpoint(string $for = self::WHATSAPP_MESSAGE_API, bool $withNumberId = true): string
     {
@@ -368,8 +335,6 @@ class Whatsapp
 
     /**
      * Create a new HTTP request instance
-     *
-     * @return PendingRequest
      */
     protected function request(): PendingRequest
     {
@@ -430,7 +395,6 @@ class Whatsapp
 
         return $this->sendToWhatsAppAPI($to, $data);
     }
-
 
     // public function sendTemplate($to, $templateName, $languageCode, $components = [])
     // {
@@ -509,7 +473,7 @@ class Whatsapp
 
     protected function validateSetup()
     {
-        if (!$this->token || !$this->numberId) {
+        if (! $this->token || ! $this->numberId) {
             throw new Exception('WhatsApp account not properly configured. Use useNumberId() before making requests.');
         }
     }

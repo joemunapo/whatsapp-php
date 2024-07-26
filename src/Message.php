@@ -56,29 +56,31 @@ class Message extends Session
 
     public function reply($content)
     {
-        if (gettype($content) === 'array') $content = (object) $content;
+        if (gettype($content) === 'array') {
+            $content = (object) $content;
+        }
 
         if (gettype($content) === 'string') {
             $content = (object) [
                 'text' => [
-                    'body' => $content
-                ]
+                    'body' => $content,
+                ],
             ];
         }
 
         $context = $content->context ?? null;
 
-        if (empty($content->buttons) && empty($content->list) && empty($content->description_list)  && gettype($content->text) === 'string') {
+        if (empty($content->buttons) && empty($content->list) && empty($content->description_list) && gettype($content->text) === 'string') {
             $content = (object) [
                 'text' => [
-                    'body' => $content->text
-                ]
+                    'body' => $content->text,
+                ],
             ];
         }
 
         if (isset($context)) {
             $content->context = [
-                "message_id" => $context
+                'message_id' => $context,
             ];
         }
 

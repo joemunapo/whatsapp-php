@@ -2,7 +2,6 @@
 
 use Joemunapo\Whatsapp\Message;
 use Joemunapo\Whatsapp\Whatsapp;
-use Illuminate\Support\Facades\Http;
 
 beforeEach(function () {
     $this->mockWhatsapp = Mockery::mock(Whatsapp::class);
@@ -56,7 +55,7 @@ it('can reply to a message and mark as read', function () {
     $msg_id = 'message_id_678';
     $messageData = (object) [
         'from' => '1234567890',
-        'id' =>  'message_id_123',
+        'id' => 'message_id_123',
         'type' => 'text',
         'text' => ['body' => 'Hello'],
     ];
@@ -86,7 +85,7 @@ it('can reply to a message with media', function () {
     $msg_id = 'message_id_678';
     $messageData = (object) [
         'from' => '1234567890',
-        'id' =>  'message_id_123',
+        'id' => 'message_id_123',
         'type' => 'text',
         'text' => ['body' => 'Hello'],
     ];
@@ -107,7 +106,7 @@ it('can reply to a message with a template', function () {
     $msg_id = 'message_id_678';
     $messageData = (object) [
         'from' => '1234567890',
-        'id' =>  'message_id_123',
+        'id' => 'message_id_123',
         'type' => 'text',
         'text' => ['body' => 'Hello'],
     ];
@@ -127,7 +126,7 @@ it('can reply to a message with a template', function () {
 it('can get media content', function () {
     $messageData = (object) [
         'from' => '1234567890',
-        'id' =>  'message_id_123',
+        'id' => 'message_id_123',
         'type' => 'image',
         'image' => [
             'id' => 'media_id',
