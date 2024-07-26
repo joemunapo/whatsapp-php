@@ -1,6 +1,6 @@
 {
     "name": "joemunapo/whatsapp-php",
-    "description": "This package provides a seamless integration of the WhatsApp Cloud API for Laravel applications. It offers a flexible. Ideal for multi-tenant applications or businesses managing multiple WhatsApp accounts, this package simplifies the complexities of WhatsApp integration while maintaining the flexibility to fit into your existing database structure.",
+    "description": "This package provides a seamless integration of the WhatsApp Cloud API for Laravel applications. It offers a flexible. Ideal for multi-tenant applications or businesses managing multiple WhatsApp accounts.",
     "keywords": [
         "joemunapo",
         "laravel",
