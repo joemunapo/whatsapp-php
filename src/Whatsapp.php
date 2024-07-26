@@ -47,7 +47,7 @@ class Whatsapp
     public function setNumberId($numberId)
     {
         $account = $this->accountResolver->resolve($numberId);
-        if (!$account) {
+        if (! $account) {
             throw new Exception("No WhatsApp account found for number ID: $numberId");
         }
         $this->setAccount($account['token'], $account['number_id'], $account['catalog_id'] ?? null);
@@ -57,6 +57,7 @@ class Whatsapp
 
     /**
      * Get the account details, returns an instance of the account model
+     *
      * @return mixed
      */
     public function getAccount()
@@ -78,21 +79,21 @@ class Whatsapp
         $instance = $instance ?? self::getInstance(app(AccountResolver::class));
 
         $entry = Arr::get($payload, 'entry.0', null);
-        if (!$entry) {
+        if (! $entry) {
             return null;
         }
 
         $change = Arr::get($entry, 'changes.0', null);
-        if (!$change || Arr::get($change, 'field') !== 'messages') {
+        if (! $change || Arr::get($change, 'field') !== 'messages') {
             return null;
         }
 
         $messageData = (object) Arr::get($change, 'value.messages.0', null);
-        if (!$messageData) {
+        if (! $messageData) {
             return null;
         }
 
-        if (!in_array(optional($messageData)->type, ['text', 'interactive', 'media', 'document', 'image', 'video'])) {
+        if (! in_array(optional($messageData)->type, ['text', 'interactive', 'media', 'document', 'image', 'video'])) {
             return null;
         }
 
@@ -116,7 +117,7 @@ class Whatsapp
     {
         $this->validateSetup();
 
-        if (!is_object($content)) {
+        if (! is_object($content)) {
             throw new \InvalidArgumentException('Content must be an object.');
         }
 
@@ -125,7 +126,7 @@ class Whatsapp
         $body = match ($content->type) {
             'interactive' => $this->createInteractiveMessage($content),
             'text' => $content,
-            default => throw new \InvalidArgumentException('Unsupported message type: ' . $content->type),
+            default => throw new \InvalidArgumentException('Unsupported message type: '.$content->type),
         };
 
         if (isset($content->context)) {
@@ -143,9 +144,9 @@ class Whatsapp
     protected function createInteractiveMessage(object $content): object
     {
         return match (true) {
-            !empty($content->buttons) => $this->createButtonMessage($content),
-            !empty($content->results) || !empty($content->related) => $this->createProductListMessage($content),
-            !empty($content->list) || !empty($content->description_list) => $this->createListMessage($content),
+            ! empty($content->buttons) => $this->createButtonMessage($content),
+            ! empty($content->results) || ! empty($content->related) => $this->createProductListMessage($content),
+            ! empty($content->list) || ! empty($content->description_list) => $this->createListMessage($content),
             default => throw new \InvalidArgumentException('Invalid interactive message type.'),
         };
     }
@@ -206,11 +207,11 @@ class Whatsapp
             ],
         ];
 
-        if (!empty($content->results)) {
+        if (! empty($content->results)) {
             $this->addProductSection($body, $content->results, $content->results_title);
         }
 
-        if (!empty($content->related)) {
+        if (! empty($content->related)) {
             $this->addProductSection($body, $content->related, $content->related_title);
         }
 
@@ -238,7 +239,7 @@ class Whatsapp
             ],
         ];
 
-        $rows = !empty($content->list)
+        $rows = ! empty($content->list)
             ? $this->createSimpleListRows($content->list)
             : $this->createDescriptionListRows($content->description_list);
 
@@ -293,14 +294,14 @@ class Whatsapp
      */
     protected function addHeaderAndFooter(object &$body, object $content): void
     {
-        if (!empty($content->header)) {
+        if (! empty($content->header)) {
             $body->interactive->header = [
                 'type' => 'text',
                 'text' => $content->header,
             ];
         }
 
-        if (!empty($content->caption)) {
+        if (! empty($content->caption)) {
             $body->interactive->footer = [
                 'text' => $content->caption,
             ];
@@ -411,7 +412,7 @@ class Whatsapp
 
     protected function validateSetup()
     {
-        if (!$this->token || !$this->numberId) {
+        if (! $this->token || ! $this->numberId) {
             throw new Exception('WhatsApp account not properly configured. Use useNumberId() before making requests.');
         }
     }
