@@ -83,7 +83,7 @@ class Whatsapp
             return null;
         }
 
-        if (in_array($messageData->type, ['unsupported', 'reaction'])) {
+        if (in_array(optional($messageData)->type, ['unsupported', 'reaction'])) {
             return null;
         }
 
