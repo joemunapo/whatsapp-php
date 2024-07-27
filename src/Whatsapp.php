@@ -145,7 +145,7 @@ class Whatsapp
      *
      * @throws \InvalidArgumentException
      */
-    protected function createInteractiveMessage(object $content): object
+    protected function createInteractiveMessage(object $content): ?object
     {
         return match (true) {
             ! empty($content->buttons) => $this->createButtonMessage($content),
