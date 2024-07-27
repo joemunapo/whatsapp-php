@@ -121,19 +121,23 @@ class Whatsapp
             throw new \InvalidArgumentException('Content must be an object.');
         }
 
-        $content->type = $content->type ?? 'text';
+        $context = $content->context ?? null;
 
-        $body = match ($content->type) {
-            'interactive' => $this->createInteractiveMessage($content),
-            'text' => $content,
-            default => throw new \InvalidArgumentException('Unsupported message type: '.$content->type),
-        };
+        $attempt_interactive = $this->createInteractiveMessage($content);
 
-        if (isset($content->context)) {
-            $body->context = $content->context;
+        if($attempt_interactive) {
+            $content = $attempt_interactive;
+        }else{
+            $content->type = $content->type ?? 'text';
         }
 
-        return $this->sendToWhatsAppAPI($to, $body);
+        if (! is_null($context)) {
+            $content->context = [
+                "message_id" => $context
+            ];
+        }
+
+        return $this->sendToWhatsAppAPI($to, $content);
     }
 
     /**
@@ -147,7 +151,7 @@ class Whatsapp
             ! empty($content->buttons) => $this->createButtonMessage($content),
             ! empty($content->results) || ! empty($content->related) => $this->createProductListMessage($content),
             ! empty($content->list) || ! empty($content->description_list) => $this->createListMessage($content),
-            default => throw new \InvalidArgumentException('Invalid interactive message type.'),
+            default => null,
         };
     }
 
