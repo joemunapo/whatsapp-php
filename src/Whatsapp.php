@@ -125,15 +125,15 @@ class Whatsapp
 
         $attempt_interactive = $this->createInteractiveMessage($content);
 
-        if($attempt_interactive) {
+        if ($attempt_interactive) {
             $content = $attempt_interactive;
-        }else{
+        } else {
             $content->type = $content->type ?? 'text';
         }
 
         if (! is_null($context)) {
             $content->context = [
-                "message_id" => $context
+                'message_id' => $context,
             ];
         }
 
