@@ -110,6 +110,21 @@ class Message extends Session
         return $this->whatsapp->sendMedia($this->from, $mediaType, $mediaUrl, $caption);
     }
 
+    public function replyWithProducts($content)
+    {
+        throw_if(! $this->getAccount()->catalog_id, 'NO_CATALOG_ID');
+
+        if (gettype($content) === 'array') $content = (object) $content;
+
+        $total = sizeof($content->results) + sizeof($content?->related ?? []);
+        
+        throw_if($total === 0, 'NO_PRODUCTS_FOUND');
+
+        throw_if($total > 30, '30_MAX_PRODUCTS_ALLOWED');
+
+        return $this->whatsapp->sendMessage($this->from, $content);
+    }
+
     public function markAsRead()
     {
         return $this->whatsapp->markMessageAsRead($this->from, $this->id);
