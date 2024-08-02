@@ -93,7 +93,7 @@ class Whatsapp
             return null;
         }
 
-        if (! in_array(optional($messageData)->type, ['text', 'interactive', 'media', 'document', 'image', 'video'])) {
+        if (! in_array(optional($messageData)->type, ['text', 'interactive', 'media', 'document', 'image', 'video', 'order'])) {
             return null;
         }
 
