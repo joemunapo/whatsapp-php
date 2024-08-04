@@ -319,6 +319,9 @@ class Whatsapp
             'type' => 'interactive',
             'interactive' => (object) [
                 'type' => 'flow',
+                'body' => [
+                    'text' => $content->text,
+                ],
                 'action' => [
                     'name' => 'flow',
                     'parameters' => [

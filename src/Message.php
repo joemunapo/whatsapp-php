@@ -86,7 +86,13 @@ class Message extends Session
 
         $context = $content->context ?? null;
 
-        if (empty($content->buttons) && empty($content->list) && empty($content->description_list) && gettype($content->text) === 'string') {
+        if (
+            empty($content->buttons) &&
+            empty($content->list) &&
+            empty($content->description_list) &&
+            empty($content->flow) &&
+            gettype($content->text) === 'string'
+        ) {
             $content = (object) [
                 'text' => [
                     'body' => $content->text,
