@@ -97,9 +97,6 @@ class Session
         );
     }
 
-    // Add another method
-
-    //TODO Check if method exists
     private function setMethod(string $method)
     {
         $this->remember('method', $method);

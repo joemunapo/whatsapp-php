@@ -166,5 +166,12 @@ class Message extends Session
         return $this->type === 'contacts';
     }
 
-    // You can add more helper methods as needed
+    public function next($param = null)
+    {
+        try {
+            return app($this->get('controller'))->{$this->get('method')}($this, $param);
+        } catch (\Throwable $th) {
+            throw new \Exception("FAILED TO RUN METHOD: " . $th->getMessage());
+        }
+    }
 }
