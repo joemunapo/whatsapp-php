@@ -315,6 +315,7 @@ class Whatsapp
 
     protected function createFlowMessage(object $content): object
     {
+        throw_if(strlen($content->flow->cta) > 20, "Flow CTA must be less than 20 characters");
         $body = (object) [
             'type' => 'interactive',
             'interactive' => (object) [
