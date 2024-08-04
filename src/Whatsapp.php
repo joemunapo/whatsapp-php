@@ -330,9 +330,10 @@ class Whatsapp
                         'flow_id' => $content->flow->id,
                         'flow_cta' => $content->flow->cta,
                         'flow_action' => $content->flow->action,
-                        'flow_action_payload' => [
+                        'flow_action_payload' => (object) [
                             'screen' => $content->flow->screen,
-                            'data' => $content->flow->data,
+                            //TODO: Add data to payload by dynamically
+                            // 'data' => $content->flow->data,
                         ],
                     ],
                 ],
