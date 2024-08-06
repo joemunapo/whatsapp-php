@@ -326,6 +326,7 @@ class Whatsapp
                 'action' => [
                     'name' => 'flow',
                     'parameters' => [
+                        'mode' => $content->flow->mode ?? 'published',
                         'flow_message_version' => '3',
                         'flow_token' => $content->flow->token,
                         'flow_id' => $content->flow->id,
@@ -333,13 +334,17 @@ class Whatsapp
                         'flow_action' => $content->flow->action,
                         'flow_action_payload' => (object) [
                             'screen' => $content->flow->screen,
-                            //TODO: Add data to payload by dynamically
-                            // 'data' => $content->flow->data,
+                            'data' => isset($content->flow->data) ? (object) $content->flow->data : null,
                         ],
                     ],
                 ],
             ],
         ];
+
+        // If data is null, remove it from the payload
+        if (is_null($content->flow->data)) {
+            unset($body->interactive->action->parameters->flow_action_payload->data);
+        }
 
         $this->addHeaderAndFooter($body, $content);
 
