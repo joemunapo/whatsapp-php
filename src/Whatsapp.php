@@ -342,7 +342,7 @@ class Whatsapp
         ];
 
         // If data is null, remove it from the payload
-        if (is_null($content->flow->data)) {
+        if (!isset($content->flow->data)) {
             unset($body->interactive->action->parameters->flow_action_payload->data);
         }
 
