@@ -97,8 +97,8 @@ class Message extends Session
             $caption = optional($content)->caption ?? null;
 
             $text = $content->text;
-            $text = !is_null($header) ? "*{$header}*\n$text" : $text;
-            $text = !is_null($caption) ? "$text\n\n_{$caption}_" : $text;
+            $text = ! is_null($header) ? "*{$header}*\n$text" : $text;
+            $text = ! is_null($caption) ? "$text\n\n_{$caption}_" : $text;
 
             $content = (object) [
                 'text' => [
