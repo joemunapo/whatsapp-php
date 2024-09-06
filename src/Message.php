@@ -161,7 +161,9 @@ class Message extends Session
 
     public function downloadMedia()
     {
-        if (!$this->mediaId) return null;
+        if (! $this->mediaId) {
+            return null;
+        }
 
         $media = $this->getMediaContent();
 
@@ -193,7 +195,7 @@ class Message extends Session
         try {
             return app($this->get('controller'))->{$this->get('method')}($this, $param);
         } catch (\Throwable $th) {
-            throw new \Exception('FAILED TO RUN METHOD: ' . $th->getMessage());
+            throw new \Exception('FAILED TO RUN METHOD: '.$th->getMessage());
         }
     }
 }
