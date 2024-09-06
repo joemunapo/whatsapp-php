@@ -451,7 +451,7 @@ class Whatsapp
             throw new Exception("Failed to get media: {$response->body()}");
         }
 
-        return $response->json();
+        return (object) $response->json();
     }
 
     public function downLoadMedia(string $url)
