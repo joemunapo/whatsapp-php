@@ -159,6 +159,15 @@ class Message extends Session
         return null;
     }
 
+    public function downloadMedia()
+    {
+        if (!$this->mediaId) return null;
+
+        $media = $this->getMediaContent();
+
+        return $this->whatsapp->downLoadMedia($media->url);
+    }
+
     public function isText()
     {
         return $this->type === 'text';
@@ -184,7 +193,7 @@ class Message extends Session
         try {
             return app($this->get('controller'))->{$this->get('method')}($this, $param);
         } catch (\Throwable $th) {
-            throw new \Exception('FAILED TO RUN METHOD: '.$th->getMessage());
+            throw new \Exception('FAILED TO RUN METHOD: ' . $th->getMessage());
         }
     }
 }
