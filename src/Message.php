@@ -25,7 +25,7 @@ class Message extends Session
 
     public bool $isOrder;
 
-    protected Whatsapp $whatsapp;
+    public Whatsapp $whatsapp;
 
     public function __construct($message, Whatsapp $whatsapp)
     {
