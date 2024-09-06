@@ -64,6 +64,9 @@ it('can handle incoming webhooks', function () {
     ];
 
     // Mock the AccountResolver to return a test account
+    /**
+     * @var \Joemunapo\Whatsapp\AccountResolver|\Mockery\MockInterface $mockResolver
+     */
     $mockResolver = Mockery::mock(AccountResolver::class);
     $mockResolver->shouldReceive('resolve')->andReturn([
         'token' => 'test_token',
@@ -91,6 +94,9 @@ it('can send a text message', function () {
     ]);
 
     // Mock the AccountResolver to return a test account
+    /**
+     * @var \Joemunapo\Whatsapp\AccountResolver|\Mockery\MockInterface $mockResolver
+     */
     $mockResolver = Mockery::mock(AccountResolver::class);
     $mockResolver->shouldReceive('resolve')->andReturn([
         'token' => 'test_token',
@@ -135,6 +141,10 @@ it('can send a media message', function () {
     ]);
 
     // Mock the AccountResolver to return a test account
+
+    /**
+     * @var \Joemunapo\Whatsapp\AccountResolver|\Mockery\MockInterface $mockResolver
+     */
     $mockResolver = Mockery::mock(AccountResolver::class);
     $mockResolver->shouldReceive('resolve')->andReturn([
         'token' => 'test_token',
@@ -170,6 +180,9 @@ it('throws an exception when account is not found', function () {
     ];
 
     // Mock the AccountResolver to return null (account not found)
+    /**
+     * @var \Joemunapo\Whatsapp\AccountResolver|\Mockery\MockInterface $mockResolver
+     */
     $mockResolver = Mockery::mock(AccountResolver::class);
     $mockResolver->shouldReceive('resolve')->andReturnNull();
 
