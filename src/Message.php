@@ -84,8 +84,6 @@ class Message extends Session
             ];
         }
 
-        $context = $content->context ?? null;
-
         if (
             empty($content->buttons) &&
             empty($content->list) &&
@@ -104,12 +102,6 @@ class Message extends Session
                 'text' => [
                     'body' => $text,
                 ],
-            ];
-        }
-
-        if (isset($context)) {
-            $content->context = [
-                'message_id' => $context,
             ];
         }
 
