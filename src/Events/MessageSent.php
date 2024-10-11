@@ -4,6 +4,7 @@ namespace Joemunapo\Whatsapp\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Joemunapo\Whatsapp\Message;
 
 class MessageSent
 {
@@ -15,9 +16,11 @@ class MessageSent
 
     public $messageId;
 
-    public function __construct($to, $content, $messageId)
+    public $message;
+
+    public function __construct(Message $message, $content, $messageId)
     {
-        $this->to = $to;
+        $this->message = $message;
         $this->content = $content;
         $this->messageId = $messageId;
     }

@@ -4,6 +4,7 @@ namespace Joemunapo\Whatsapp;
 
 use Illuminate\Support\Arr;
 use Joemunapo\Whatsapp\Events\MessageReceived;
+use Joemunapo\Whatsapp\Events\MessageSent;
 
 class Message extends Session
 {
@@ -111,12 +112,27 @@ class Message extends Session
 
         $this->markAsRead();
 
-        return $this->whatsapp->sendMessage($this->from, $content);
+        $messageId = $this->whatsapp->sendMessage($this->from, $content);
+        event(new MessageSent($this, $content, $messageId));
+
+        return $messageId;
     }
 
     public function replyWithMedia($mediaType, $mediaUrl, $caption = null)
     {
-        return $this->whatsapp->sendMedia($this->from, $mediaType, $mediaUrl, $caption);
+        $messageId =  $this->whatsapp->sendMedia($this->from, $mediaType, $mediaUrl, $caption);
+
+        $content = (object) [
+            'type' => $mediaType,
+            $mediaType => [
+                'link' => $mediaUrl,
+                'caption' => $caption,
+            ],
+        ];
+
+        event(new MessageSent($this, $content, $messageId));
+
+        return $messageId;
     }
 
     public function replyWithProducts($content)
@@ -133,7 +149,11 @@ class Message extends Session
 
         throw_if($total > 30, '30_MAX_PRODUCTS_ALLOWED');
 
-        return $this->whatsapp->sendMessage($this->from, $content);
+        $messageId =  $this->whatsapp->sendMessage($this->from, $content);
+
+        event(new MessageSent($this, $content, $messageId));
+
+        return $messageId;
     }
 
     public function markAsRead()
@@ -143,7 +163,20 @@ class Message extends Session
 
     public function replyWithTemplate($templateName, $languageCode, $components = [])
     {
-        return $this->whatsapp->sendTemplate($this->from, $templateName, $languageCode, $components);
+        $messageId = $this->whatsapp->sendTemplate($this->from, $templateName, $languageCode, $components);
+
+        $content = (object) [
+            'type' => 'template',
+            'template' => (object) [
+                'name' => $templateName,
+                'language' => (object) ['code' => $languageCode],
+                'components' => $components,
+            ],
+        ];
+
+        event(new MessageSent($this, $content, $messageId));
+
+        return $messageId;
     }
 
     public function getMediaContent()
@@ -191,7 +224,7 @@ class Message extends Session
         try {
             return app($this->get('controller'))->{$this->get('method')}($this, $param);
         } catch (\Throwable $th) {
-            throw new \Exception('FAILED TO RUN METHOD: '.$th->getMessage());
+            throw new \Exception('FAILED TO RUN METHOD: ' . $th->getMessage());
         }
     }
 }
