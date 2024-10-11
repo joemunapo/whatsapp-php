@@ -10,8 +10,6 @@ class MessageSent
 {
     use Dispatchable, SerializesModels;
 
-    public $to;
-
     public $content;
 
     public $messageId;
