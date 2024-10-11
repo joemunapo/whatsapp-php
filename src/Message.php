@@ -120,7 +120,7 @@ class Message extends Session
 
     public function replyWithMedia($mediaType, $mediaUrl, $caption = null)
     {
-        $messageId =  $this->whatsapp->sendMedia($this->from, $mediaType, $mediaUrl, $caption);
+        $messageId = $this->whatsapp->sendMedia($this->from, $mediaType, $mediaUrl, $caption);
 
         $content = (object) [
             'type' => $mediaType,
@@ -149,7 +149,7 @@ class Message extends Session
 
         throw_if($total > 30, '30_MAX_PRODUCTS_ALLOWED');
 
-        $messageId =  $this->whatsapp->sendMessage($this->from, $content);
+        $messageId = $this->whatsapp->sendMessage($this->from, $content);
 
         event(new MessageSent($this, $content, $messageId));
 
@@ -224,7 +224,7 @@ class Message extends Session
         try {
             return app($this->get('controller'))->{$this->get('method')}($this, $param);
         } catch (\Throwable $th) {
-            throw new \Exception('FAILED TO RUN METHOD: ' . $th->getMessage());
+            throw new \Exception('FAILED TO RUN METHOD: '.$th->getMessage());
         }
     }
 }
