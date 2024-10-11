@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
+use Joemunapo\Whatsapp\Events\MessageSent;
 
 /**
  * Whatsapp Class for Sending messages to Whatsapp cloud API
@@ -184,7 +185,7 @@ class Whatsapp
      */
     protected function createButtons(array $buttons): array
     {
-        return Arr::map($buttons, fn ($btn) => [
+        return Arr::map($buttons, fn($btn) => [
             'type' => 'reply',
             'reply' => [
                 'id' => $btn,
@@ -263,7 +264,7 @@ class Whatsapp
      */
     protected function addProductSection(object &$body, array $products, string $title): void
     {
-        $items = Arr::map($products, fn ($prod_id) => ['product_retailer_id' => $prod_id]);
+        $items = Arr::map($products, fn($prod_id) => ['product_retailer_id' => $prod_id]);
 
         $body->interactive->action->sections[] = [
             'title' => $title,
@@ -276,7 +277,7 @@ class Whatsapp
      */
     protected function createSimpleListRows(array $list): array
     {
-        return Arr::map($list, fn ($item) => [
+        return Arr::map($list, fn($item) => [
             'id' => $item,
             'title' => $item,
         ]);
@@ -287,7 +288,7 @@ class Whatsapp
      */
     protected function createDescriptionListRows(array $list): array
     {
-        return Arr::map($list, fn ($item) => [
+        return Arr::map($list, fn($item) => [
             'id' => $item->id,
             'title' => $item->title,
             'description' => $item->description ?? null,
@@ -372,7 +373,12 @@ class Whatsapp
                 throw new Exception("Failed to send WA message to {$to}: {$response->body()}");
             }
 
-            return Arr::get($response->json(), 'messages.0.id');
+            $messageId = $response->json('messages.0.id', null);
+
+            // Dispatch the MessageSent event
+            event(new MessageSent($to, $content, $messageId));
+
+            return $messageId;
         } catch (\Throwable $th) {
             throw new Exception("Failed to send WA message to {$to}: {$th->getMessage()}");
         }
@@ -384,7 +390,7 @@ class Whatsapp
     protected function buildApiEndpoint(string $for = self::WHATSAPP_MESSAGE_API, bool $withNumberId = true): string
     {
         return str(self::WHATSAPP_API_URL)
-            ->when($withNumberId, fn ($str) => $str->append('/', $this->numberId))
+            ->when($withNumberId, fn($str) => $str->append('/', $this->numberId))
             ->append('/', $for);
     }
 

@@ -3,6 +3,7 @@
 namespace Joemunapo\Whatsapp;
 
 use Illuminate\Support\Arr;
+use Joemunapo\Whatsapp\Events\MessageReceived;
 
 class Message extends Session
 {
@@ -58,6 +59,9 @@ class Message extends Session
 
         $this->isButton = $media_type === 'button_reply';
         $this->isOrder = $this->type === 'order';
+
+        // Dispatch the MessageReceived event
+        event(new MessageReceived($this));
     }
 
     public function isHi()
