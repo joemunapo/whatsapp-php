@@ -10,7 +10,9 @@ class MessageSent
     use Dispatchable, SerializesModels;
 
     public $to;
+
     public $content;
+
     public $messageId;
 
     public function __construct($to, $content, $messageId)

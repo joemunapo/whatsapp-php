@@ -185,7 +185,7 @@ class Whatsapp
      */
     protected function createButtons(array $buttons): array
     {
-        return Arr::map($buttons, fn($btn) => [
+        return Arr::map($buttons, fn ($btn) => [
             'type' => 'reply',
             'reply' => [
                 'id' => $btn,
@@ -264,7 +264,7 @@ class Whatsapp
      */
     protected function addProductSection(object &$body, array $products, string $title): void
     {
-        $items = Arr::map($products, fn($prod_id) => ['product_retailer_id' => $prod_id]);
+        $items = Arr::map($products, fn ($prod_id) => ['product_retailer_id' => $prod_id]);
 
         $body->interactive->action->sections[] = [
             'title' => $title,
@@ -277,7 +277,7 @@ class Whatsapp
      */
     protected function createSimpleListRows(array $list): array
     {
-        return Arr::map($list, fn($item) => [
+        return Arr::map($list, fn ($item) => [
             'id' => $item,
             'title' => $item,
         ]);
@@ -288,7 +288,7 @@ class Whatsapp
      */
     protected function createDescriptionListRows(array $list): array
     {
-        return Arr::map($list, fn($item) => [
+        return Arr::map($list, fn ($item) => [
             'id' => $item->id,
             'title' => $item->title,
             'description' => $item->description ?? null,
@@ -390,7 +390,7 @@ class Whatsapp
     protected function buildApiEndpoint(string $for = self::WHATSAPP_MESSAGE_API, bool $withNumberId = true): string
     {
         return str(self::WHATSAPP_API_URL)
-            ->when($withNumberId, fn($str) => $str->append('/', $this->numberId))
+            ->when($withNumberId, fn ($str) => $str->append('/', $this->numberId))
             ->append('/', $for);
     }
 
