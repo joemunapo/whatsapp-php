@@ -22,7 +22,7 @@ class Message extends Session
     public ?string $mediaId;
 
     public ?string $flowToken;
-    
+
     public ?string $flowData;
 
     public ?object $media;
