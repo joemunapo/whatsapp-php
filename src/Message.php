@@ -22,6 +22,8 @@ class Message extends Session
     public ?string $mediaId;
 
     public ?string $flowToken;
+    
+    public ?string $flowData;
 
     public ?object $media;
 
@@ -57,7 +59,8 @@ class Message extends Session
         $nfm_reply = Arr::get($media, 'nfm_reply.response_json', null);
         if ($nfm_reply) {
             $decoded_response = json_decode($nfm_reply, true);
-            $this->flowToken = Arr::get($decoded_response, 'flow_token', '');
+            $this->flowToken = Arr::get($decoded_response, 'flow_token', null);
+            $this->flowData = Arr::get($decoded_response, 'flow_data', null); // Add flowData extraction
         }
 
         $this->text = collect([
