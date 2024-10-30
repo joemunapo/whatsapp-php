@@ -58,7 +58,6 @@ class Message extends Session
         if ($nfm_reply) {
             $decoded_response = json_decode($nfm_reply, true);
             $this->flowToken = Arr::get($decoded_response, 'flow_token', '');
-            logger('Flow', [$this->flowToken]);
         }
 
         $this->text = collect([
