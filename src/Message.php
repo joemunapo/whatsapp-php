@@ -21,6 +21,8 @@ class Message extends Session
 
     public ?string $mediaId;
 
+    public ?string $flowToken;
+
     public ?object $media;
 
     public bool $isButton;
@@ -51,6 +53,13 @@ class Message extends Session
         $media_type = Arr::get($media, 'type', '__');
         $this->mediaId = Arr::get($media, "$media_type.id", Arr::get($media, 'id', ''));
         $this->media = (object) $media;
+
+        $nfm_reply = Arr::get($media, 'nfm_reply.response_json', null);
+        if ($nfm_reply) {
+            $decoded_response = json_decode($nfm_reply, true);
+            $this->flowToken = Arr::get($decoded_response, 'flow_token', '');
+            logger("Flow", [$this->flowToken]);
+        }
 
         $this->text = collect([
             Arr::get($media, 'body', null),
@@ -224,7 +233,7 @@ class Message extends Session
         try {
             return app($this->get('controller'))->{$this->get('method')}($this, $param);
         } catch (\Throwable $th) {
-            throw new \Exception('FAILED TO RUN METHOD: '.$th->getMessage());
+            throw new \Exception('FAILED TO RUN METHOD: ' . $th->getMessage());
         }
     }
 }
