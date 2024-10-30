@@ -58,6 +58,7 @@ class Message extends Session
         if ($nfm_reply) {
             $decoded_response = json_decode($nfm_reply, true);
             $this->flowToken = Arr::get($decoded_response, 'flow_token', '');
+            logger('Flow', [$this->flowToken]);
         }
 
         $this->text = collect([
@@ -232,7 +233,7 @@ class Message extends Session
         try {
             return app($this->get('controller'))->{$this->get('method')}($this, $param);
         } catch (\Throwable $th) {
-            throw new \Exception('FAILED TO RUN METHOD: ' . $th->getMessage());
+            throw new \Exception('FAILED TO RUN METHOD: '.$th->getMessage());
         }
     }
 }
