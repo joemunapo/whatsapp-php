@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
+use Joemunapo\Whatsapp\Events\ApiWhatsappSend;
 
 /**
  * Whatsapp Class for Sending messages to Whatsapp cloud API
@@ -378,6 +379,8 @@ class Whatsapp
             }
 
             $messageId = $response->json('messages.0.id', null);
+
+            event(new ApiWhatsappSend($content, $messageId));
 
             return $messageId;
         } catch (\Throwable $th) {
