@@ -120,7 +120,7 @@ class Message extends Session
                 'text' => [
                     'body' => $text,
                 ],
-                'context' => $context
+                'context' => $context,
             ];
         }
 
@@ -238,7 +238,7 @@ class Message extends Session
         try {
             return app($this->get('controller'))->{$this->get('method')}($this, $param);
         } catch (\Throwable $th) {
-            throw new \Exception('FAILED TO RUN METHOD: ' . $th->getMessage());
+            throw new \Exception('FAILED TO RUN METHOD: '.$th->getMessage());
         }
     }
 }
