@@ -12,10 +12,5 @@ class MessageReceived
 {
     use Dispatchable, SerializesModels;
 
-    public $message;
-
-    public function __construct(Message $message)
-    {
-        $this->message = $message;
-    }
+    public function __construct(public Message $message) {}
 }

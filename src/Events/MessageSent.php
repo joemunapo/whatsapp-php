@@ -10,16 +10,5 @@ class MessageSent
 {
     use Dispatchable, SerializesModels;
 
-    public $content;
-
-    public $messageId;
-
-    public $message;
-
-    public function __construct(Message $message, $content, $messageId)
-    {
-        $this->message = $message;
-        $this->content = $content;
-        $this->messageId = $messageId;
-    }
+    public function __construct(public Message $message, public $content, public $messageId) {}
 }
