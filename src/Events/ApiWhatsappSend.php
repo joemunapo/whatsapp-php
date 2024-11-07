@@ -9,5 +9,5 @@ class ApiWhatsappSend
 {
     use Dispatchable, SerializesModels;
 
-    public function __construct(public $content, public $messageId) {}
+    public function __construct(public $to, public $content, public $messageId) {}
 }

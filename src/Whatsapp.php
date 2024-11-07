@@ -380,7 +380,7 @@ class Whatsapp
 
             $messageId = $response->json('messages.0.id', null);
 
-            event(new ApiWhatsappSend($content, $messageId));
+            event(new ApiWhatsappSend($to, $content, $messageId));
 
             return $messageId;
         } catch (\Throwable $th) {
