@@ -88,6 +88,7 @@ class Message extends Session
 
     public function reply($content)
     {
+        $context = null;
         if (gettype($content) === 'array') {
             $content = (object) $content;
         }
@@ -109,6 +110,7 @@ class Message extends Session
         ) {
             $header = optional($content)->header ?? null;
             $caption = optional($content)->caption ?? null;
+            $context = optional($content)->context ?? null;
 
             $text = $content->text;
             $text = ! is_null($header) ? "*{$header}*\n$text" : $text;
@@ -118,6 +120,7 @@ class Message extends Session
                 'text' => [
                     'body' => $text,
                 ],
+                'context' => $context
             ];
         }
 
@@ -235,7 +238,7 @@ class Message extends Session
         try {
             return app($this->get('controller'))->{$this->get('method')}($this, $param);
         } catch (\Throwable $th) {
-            throw new \Exception('FAILED TO RUN METHOD: '.$th->getMessage());
+            throw new \Exception('FAILED TO RUN METHOD: ' . $th->getMessage());
         }
     }
 }
