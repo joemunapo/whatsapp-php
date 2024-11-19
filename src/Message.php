@@ -21,6 +21,8 @@ class Message extends Session
 
     public ?string $mediaId;
 
+    public ?string $contextId;
+
     public ?string $flowToken;
 
     public ?object $flowData;
@@ -54,6 +56,7 @@ class Message extends Session
         $media = $message->{$this->type};
         $media_type = Arr::get($media, 'type', '__');
         $this->mediaId = Arr::get($media, "$media_type.id", Arr::get($media, 'id', ''));
+        $this->contextId = Arr::get($message->context ?? [], "id", null);
         $this->media = (object) $media;
 
         $nfm_reply = Arr::get($media, 'nfm_reply.response_json', null);
